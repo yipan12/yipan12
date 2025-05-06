@@ -49,7 +49,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18" # Upgraded from 16 to 18 to fix compatibility issues
 
       - name: Create output directory
         run: mkdir -p output
@@ -60,11 +60,29 @@ jobs:
           git clone https://github.com/abozanona/pacman-contribution-graph.git
           cd pacman-contribution-graph
 
+          # List directory contents to debug
+          echo "Directory contents:"
+          ls -la
+
           echo "Installing dependencies..."
           npm install
 
+          # Check for the actual entry point file
+          echo "Looking for entry point file..."
+          if [ -f "src/index.js" ]; then
+            ENTRY_FILE="src/index.js"
+          elif [ -f "app.js" ]; then
+            ENTRY_FILE="app.js"
+          elif [ -f "main.js" ]; then
+            ENTRY_FILE="main.js"
+          else
+            ENTRY_FILE=$(find . -name "*.js" -not -path "*/node_modules/*" -type f | head -1)
+          fi
+
+          echo "Using entry file: $ENTRY_FILE"
+
           echo "Generating Pacman SVG..."
-          node index.js --username ${{ github.repository_owner }} --output-path ../output/pacman-contribution-graph.svg
+          node $ENTRY_FILE --username ${{ github.repository_owner }} --output-path ../output/pacman-contribution-graph.svg
 
           echo "Checking generated file..."
           ls -la ../output/
