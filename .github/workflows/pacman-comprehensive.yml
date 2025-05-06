@@ -1,0 +1,56 @@
+name: Comprehensive Pacman Generator
+
+on:
+  workflow_dispatch: # Untuk memungkinkan menjalankan workflow secara manual
+  push:
+    branches:
+      - main
+
+jobs:
+  generate:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - name: Create output directory
+        run: mkdir -p dist
+
+      - name: Clone and run Pacman generator
+        run: |
+          echo "Cloning Pacman contribution graph repository..."
+          git clone https://github.com/abozanona/pacman-contribution-graph.git
+          cd pacman-contribution-graph
+
+          echo "Installing dependencies..."
+          npm install
+
+          echo "Generating Pacman SVG..."
+          node index.js --username ${{ github.repository_owner }} --output-path ../dist/pacman-contribution-graph.svg
+
+          echo "Checking generated file..."
+          ls -la ../dist/
+
+      - name: Debug output directory
+        run: |
+          echo "Contents of dist directory:"
+          ls -la dist/
+
+          echo "Full directory structure:"
+          find . -type f -not -path "*/node_modules/*" -not -path "*/\.git/*" | sort
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist
+          branch: output
+          token: ${{ secrets.GITHUB_TOKEN }}
