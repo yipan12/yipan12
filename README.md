@@ -39,11 +39,6 @@
 ![](https://github-contributor-stats.vercel.app/api?username=yipan12&limit=5&theme=dark&combine_all_yearly_contributions=true)
 
 <h5 align="left">Play With Me</h5>
-
-###
-
 <br clear="both">
-
 <img src="https://raw.githubusercontent.com/yipan12/yipan12/output/snake.svg" alt="Snake animation" />
-
 ###
