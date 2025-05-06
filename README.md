@@ -15,4 +15,6 @@ Here are some ideas to get you started:
 - ⚡ Fun fact: ...
 -->
 
-- 🌱 I’m currently learning Laravel Framework
+- 🌱 I’m currently learning [**Laravel**](https://laravel.com) Framework
+
+  ![Hallo](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExanRmY2ExbGJmOGV6MjluYXZsMXpiODQ3aWw4b2ZncnZ6Yzl0MXhzeSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/LnCKqzTtlRUo8/giphy.gif)
