@@ -1,18 +1,47 @@
-name: Comprehensive Pacman Generator
+name: GitHub Profile README Graphics Generator
 
 on:
-  workflow_dispatch: # Untuk memungkinkan menjalankan workflow secara manual
+  workflow_dispatch: # Memungkinkan menjalankan workflow secara manual
+  schedule:
+    - cron: "0 0 * * *" # Berjalan setiap hari pada pukul 00:00 UTC
   push:
     branches:
       - main
 
 jobs:
-  generate:
+  generate-snake:
+    runs-on: ubuntu-latest
     permissions:
       contents: write
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
+      - name: Generate Snake SVG
+        uses: Platane/snk@v3
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          outputs: |
+            dist/snake.svg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Move output files
+        run: |
+          mkdir -p output
+          mv dist/snake.svg output/
+
+      - name: Push to output branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: output
+          branch: output
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  generate-pacman:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -23,7 +52,7 @@ jobs:
           node-version: "16"
 
       - name: Create output directory
-        run: mkdir -p dist
+        run: mkdir -p output
 
       - name: Clone and run Pacman generator
         run: |
@@ -35,22 +64,14 @@ jobs:
           npm install
 
           echo "Generating Pacman SVG..."
-          node index.js --username ${{ github.repository_owner }} --output-path ../dist/pacman-contribution-graph.svg
+          node index.js --username ${{ github.repository_owner }} --output-path ../output/pacman-contribution-graph.svg
 
           echo "Checking generated file..."
-          ls -la ../dist/
+          ls -la ../output/
 
-      - name: Debug output directory
-        run: |
-          echo "Contents of dist directory:"
-          ls -la dist/
-
-          echo "Full directory structure:"
-          find . -type f -not -path "*/node_modules/*" -not -path "*/\.git/*" | sort
-
-      - name: Deploy to GitHub Pages
+      - name: Push to output branch
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: dist
+          folder: output
           branch: output
           token: ${{ secrets.GITHUB_TOKEN }}
